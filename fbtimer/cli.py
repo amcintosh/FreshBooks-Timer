@@ -1,6 +1,11 @@
 import click
 import logging
+import os
 from fbtimer.service import auth
+from datetime import timedelta
+import dateutil.parser
+from dateutil import tz
+
 
 log = logging.getLogger(__name__)
 
@@ -27,6 +32,37 @@ def cli(ctx, verbose, stdout):
 @cli.command()
 def show():
     '''Show any currently running timers. The default command.'''
-    #auth.authorize()
-    data = auth.make_req(auth.get_token(), 'https://api.freshbooks.com/timetracking/business/38408/time_entries')
-    print(data.text)
+    data = auth.make_req(auth.get_token(), 'https://api.freshbooks.com/timetracking/business/38408/timers').json()
+    log.debug(data)
+
+    if len(data.get('timers')) == 0:
+        click.secho('No running timer', fg='blue')
+        return
+    timer = data.get('timers')[0]
+    from_zone = tz.tzutc()
+    to_zone = tz.tzlocal()
+    start_time = dateutil.parser.parse(timer.get('time_entries')[0]['started_at'])
+    start_time = start_time.replace(tzinfo=from_zone)
+    start_time = start_time.astimezone(to_zone)
+    duration = 0
+    for time_entry in timer.get('time_entries'):
+        if time_entry.get('duration'):
+            duration = duration + time_entry.get('duration')
+    if timer['is_running']:
+        click.secho(
+            'Running: {}, started at {}'.format(
+                timedelta(seconds=duration), start_time.strftime('%I:%M %p')),
+            fg='green'
+        )
+    else:
+        click.secho(
+            'Paused: {}, started at {}'.format(
+                timedelta(seconds=duration), start_time.strftime('%I:%M %p')),
+            fg='magenta'
+        )
+
+
+@cli.command()
+def logout():
+    '''Log out and delete any authorization data.'''
+    os.remove(os.path.join(click.get_app_dir('fbtimer'), 'settings.ini'))
