@@ -5,7 +5,7 @@ from fbtimer.service import auth
 from datetime import timedelta
 import dateutil.parser
 from dateutil import tz
-
+from fbtimer.model.user import User
 
 log = logging.getLogger(__name__)
 
@@ -32,7 +32,8 @@ def cli(ctx, verbose, stdout):
 @cli.command()
 def show():
     '''Show any currently running timers. The default command.'''
-    data = auth.make_req(auth.get_token(), 'https://api.freshbooks.com/timetracking/business/38408/timers').json()
+    user = User()
+    data = auth.make_req(user.token, 'https://api.freshbooks.com/timetracking/business/38408/timers').json()
     log.debug(data)
 
     if len(data.get('timers')) == 0:
