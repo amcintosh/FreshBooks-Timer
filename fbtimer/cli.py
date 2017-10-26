@@ -33,7 +33,7 @@ def cli(ctx, verbose, stdout):
 def show():
     '''Show any currently running timers. The default command.'''
     user = User()
-    data = auth.make_req(user.token, 'https://api.freshbooks.com/timetracking/business/38408/timers').json()
+    data = auth.make_req(user.token, 'timetracking/business/38408/timers').json()
     log.debug(data)
 
     if len(data.get('timers')) == 0:

@@ -7,7 +7,9 @@ log = logging.getLogger(__name__)
 CLIENT_ID = '503203a5111a38c1af565068dcaca80f56ca1c6983c6ed7c39d374bc67d42179'
 CLIENT_SECRET = '24c720272db55588895944729d562ca5baff2e1ced7039724dfeb5500fc311fa'
 
-FB_TOKEN_URL = 'https://api.freshbooks.com/auth/oauth/token'
+
+FRESHBOOKS_BASE_URL = 'https://api.freshbooks.com/'
+FRESHBOOKS_TOKEN_URL = 'auth/oauth/token'
 
 
 def make_req(token, url):
@@ -18,13 +20,26 @@ def make_req(token, url):
     client = OAuth2Session(
         CLIENT_ID,
         token=token,
-        auto_refresh_url=FB_TOKEN_URL,
+        auto_refresh_url='{}{}'.format(FRESHBOOKS_BASE_URL, FRESHBOOKS_TOKEN_URL),
         auto_refresh_kwargs=extra,
         token_updater=write_token
     )
     client.headers.update(fb_headers())
-    res = client.get(url)
+    res = client.get('{}{}'.format(FRESHBOOKS_BASE_URL, url))
     return res
+
+
+def get_business(token):
+    res = make_req(token, 'auth/api/v1/users/me').json()['response']
+    business_list = []
+    for index, business_membership in enumerate(res['business_memberships'], start=1):
+        business = business_membership['business']
+        business_list.append(
+            (business['name'], business['id'], business['account_id'])
+        )
+        print('{}. {}'.format(index, business['name']))
+    selected = input('Which business would you like to sign into: ')
+    return business_list[int(selected) - 1]
 
 
 def authorize():
@@ -39,7 +54,7 @@ def authorize():
 
     oauth.headers.update(fb_headers())
     token = oauth.fetch_token(
-        token_url=FB_TOKEN_URL,
+        token_url='{}{}'.format(FRESHBOOKS_BASE_URL, FRESHBOOKS_TOKEN_URL),
         authorization_response=authorization_response,
         client_secret=CLIENT_SECRET,
         token=state
