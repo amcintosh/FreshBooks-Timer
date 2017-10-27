@@ -1,11 +1,11 @@
 import click
 import logging
 import os
-from fbtimer.service import auth
 from datetime import timedelta
 import dateutil.parser
 from dateutil import tz
 from fbtimer.model.user import User
+from fbtimer.service.timer import get_timer
 
 log = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ def cli(ctx, verbose, stdout):
 def show():
     '''Show any currently running timers. The default command.'''
     user = User()
-    data = auth.make_req(user.token, 'timetracking/business/38408/timers').json()
+    data = get_timer(user)
     log.debug(data)
 
     if len(data.get('timers')) == 0:
