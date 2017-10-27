@@ -1,6 +1,6 @@
 from requests_oauthlib import OAuth2Session
 import logging
-from fbtimer.service.user import write_token
+from fbtimer.service.config import write_token
 
 log = logging.getLogger(__name__)
 
