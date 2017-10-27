@@ -1,8 +1,10 @@
 import logging
-from fbtimer.service.auth import authorize, get_business
+from fbtimer.service.auth import authorize
 from fbtimer.service.config import (
     read_user, write_token, write_business, MissingAuthError
 )
+from fbtimer.service.user import get_business
+
 
 log = logging.getLogger(__name__)
 
