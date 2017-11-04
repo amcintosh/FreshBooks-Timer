@@ -1,18 +1,17 @@
 from requests_oauthlib import OAuth2Session
 import logging
 from fbtimer.service.config import write_token
-
+from fbtimer import FRESHBOOKS_BASE_URL
 log = logging.getLogger(__name__)
 
 CLIENT_ID = '503203a5111a38c1af565068dcaca80f56ca1c6983c6ed7c39d374bc67d42179'
 CLIENT_SECRET = '24c720272db55588895944729d562ca5baff2e1ced7039724dfeb5500fc311fa'
 
 
-FRESHBOOKS_BASE_URL = 'https://api.freshbooks.com/'
 FRESHBOOKS_TOKEN_URL = 'auth/oauth/token'
 
 
-def make_req(token, url):
+def auth(token):
     extra = {
         'client_id': CLIENT_ID,
         'client_secret': CLIENT_SECRET,
@@ -25,8 +24,7 @@ def make_req(token, url):
         token_updater=write_token
     )
     client.headers.update(fb_headers())
-    res = client.get('{}{}'.format(FRESHBOOKS_BASE_URL, url))
-    return res
+    return client
 
 
 def authorize():

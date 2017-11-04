@@ -1,8 +1,13 @@
-from fbtimer.service.auth import make_req
+from fbtimer import FRESHBOOKS_BASE_URL
+from fbtimer.service.auth import auth
 
 
 def get_business(token):
-    res = make_req(token, 'auth/api/v1/users/me').json()['response']
+    res = auth(token).get(
+        '{}{}'.format(
+            FRESHBOOKS_BASE_URL,
+            'auth/api/v1/users/me'
+        )).json()['response']
     business_list = []
     for index, business_membership in enumerate(res['business_memberships'], start=1):
         business = business_membership['business']

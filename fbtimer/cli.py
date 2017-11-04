@@ -2,10 +2,12 @@ import click
 import logging
 import os
 from datetime import timedelta
-import dateutil.parser
-from dateutil import tz
+import fbtimer
 from fbtimer.model.user import User
 from fbtimer.service.timer import get_timer
+from fbtimer.service.time_entry import create_new_time_entry
+import requests
+from fbtimer.util import parse_datetime_to_local
 
 log = logging.getLogger(__name__)
 
@@ -22,6 +24,7 @@ def configure_logging(verbose, stdout):
 @click.group(invoke_without_command=True)
 @click.option('-o', '--stdout', is_flag=True, help='Enable logging to stdout. Helpful for debugging.')
 @click.option('-v', '--verbose', is_flag=True, help='Enable debug logging.')
+@click.version_option(version=fbtimer.__version__)
 @click.pass_context
 def cli(ctx, verbose, stdout):
     configure_logging(verbose, stdout)
@@ -32,35 +35,45 @@ def cli(ctx, verbose, stdout):
 @cli.command()
 def show():
     '''Show any currently running timers. The default command.'''
-    user = User()
-    data = get_timer(user)
-    log.debug(data)
+    timer = get_timer(User())
 
-    if len(data.get('timers')) == 0:
+    if not timer:
         click.secho('No running timer', fg='blue')
         return
-    timer = data.get('timers')[0]
-    from_zone = tz.tzutc()
-    to_zone = tz.tzlocal()
-    start_time = dateutil.parser.parse(timer.get('time_entries')[0]['started_at'])
-    start_time = start_time.replace(tzinfo=from_zone)
-    start_time = start_time.astimezone(to_zone)
-    duration = 0
-    for time_entry in timer.get('time_entries'):
-        if time_entry.get('duration'):
-            duration = duration + time_entry.get('duration')
-    if timer['is_running']:
+    if timer.is_running:
         click.secho(
             'Running: {}, started at {}'.format(
-                timedelta(seconds=duration), start_time.strftime('%I:%M %p')),
+                timedelta(seconds=timer.duration), timer.start_time.strftime('%I:%M %p')),
             fg='green'
         )
     else:
         click.secho(
             'Paused: {}, started at {}'.format(
-                timedelta(seconds=duration), start_time.strftime('%I:%M %p')),
+                timedelta(seconds=timer.duration), timer.start_time.strftime('%I:%M %p')),
             fg='magenta'
         )
+
+
+@cli.command()
+def start():
+    '''Shart or resume timers.'''
+    user = User()
+    timer = get_timer(user)
+
+    if timer and timer.is_running:
+        pass  # fail
+    else:
+        try:
+            timer = create_new_time_entry(user)
+            click.secho(
+            'Timer started at {}'.format(
+                parse_datetime_to_local(timer['time_entry'].get('started_at')).strftime('%I:%M %p')),
+            fg='green'
+        )
+
+        except requests.exceptions.HTTPError as e:
+            click.secho('Error while trying to start timer', fg='magenta')
+            log.debug(e)
 
 
 @cli.command()

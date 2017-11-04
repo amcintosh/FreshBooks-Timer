@@ -1,9 +1,13 @@
-from fbtimer.service.auth import make_req
+from fbtimer import FRESHBOOKS_BASE_URL
+from fbtimer.service.auth import auth
+from fbtimer.model.timer import Timer
 
 
 def get_timer(user):
-    res = make_req(
-        user.token,
-        'timetracking/business/{}/timers'.format(user.business_id)
+    res = auth(user.token).get(
+        '{}timetracking/business/{}/timers'.format(FRESHBOOKS_BASE_URL, user.business_id)
     ).json()
-    return res
+
+    if len(res.get('timers')) == 0:
+        return None
+    return Timer(res.get('timers')[0])
