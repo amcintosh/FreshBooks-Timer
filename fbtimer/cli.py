@@ -1,11 +1,10 @@
 import click
 import logging
 import os
-from datetime import timedelta
 import fbtimer
 from fbtimer.model.user import User
 from fbtimer.service.timer import get_timer
-from fbtimer.service.time_entry import create_new_time_entry
+from fbtimer.service.time_entry import create_new_time_entry, pause_time_entry
 import requests
 from fbtimer.util import parse_datetime_to_local
 
@@ -33,6 +32,12 @@ def cli(ctx, verbose, stdout):
 
 
 @cli.command()
+def logout():
+    '''Log out and delete any authorization data.'''
+    os.remove(os.path.join(click.get_app_dir('fbtimer'), 'settings.ini'))
+
+
+@cli.command()
 def show():
     '''Show any currently running timers. The default command.'''
     timer = get_timer(User())
@@ -41,42 +46,42 @@ def show():
         click.secho('No running timer', fg='blue')
         return
     if timer.is_running:
-        click.secho(
-            'Running: {}, started at {}'.format(
-                timedelta(seconds=timer.duration), timer.start_time.strftime('%I:%M %p')),
-            fg='green'
-        )
+        click.secho(str(timer), fg='green')
     else:
-        click.secho(
-            'Paused: {}, started at {}'.format(
-                timedelta(seconds=timer.duration), timer.start_time.strftime('%I:%M %p')),
-            fg='magenta'
-        )
+        click.secho(str(timer), fg='magenta')
 
 
 @cli.command()
 def start():
-    '''Shart or resume timers.'''
+    '''Start or resume timers.'''
     user = User()
     timer = get_timer(user)
 
     if timer and timer.is_running:
-        pass  # fail
-    else:
-        try:
-            timer = create_new_time_entry(user)
-            click.secho(
+        click.secho('You already have a timer running', fg='magenta')
+        return
+
+    try:
+        timer = create_new_time_entry(user, timer)
+        click.secho(
             'Timer started at {}'.format(
-                parse_datetime_to_local(timer['time_entry'].get('started_at')).strftime('%I:%M %p')),
+                parse_datetime_to_local(timer['time_entry'].get('started_at')).strftime('%-I:%M %p')),
             fg='green'
         )
+        click.secho('Go to https://my.freshbooks.com/#/time-tracking to fill out the details.')
 
-        except requests.exceptions.HTTPError as e:
-            click.secho('Error while trying to start timer', fg='magenta')
-            log.debug(e)
+    except requests.exceptions.HTTPError as e:
+        click.secho('Error while trying to start timer', fg='magenta')
+        log.debug(e)
 
 
 @cli.command()
-def logout():
-    '''Log out and delete any authorization data.'''
-    os.remove(os.path.join(click.get_app_dir('fbtimer'), 'settings.ini'))
+def pause():
+    '''Pause current timer.'''
+    user = User()
+    timer = get_timer(user)
+
+    if not timer or not timer.is_running:
+        click.secho('There is no timer running', fg='magenta')
+        return
+    timer = pause_time_entry(user, timer)
