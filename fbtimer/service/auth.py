@@ -1,7 +1,11 @@
-from requests_oauthlib import OAuth2Session
 import logging
-from fbtimer.service.config import write_token
+
+from requests_oauthlib import OAuth2Session
+
 from fbtimer import FRESHBOOKS_BASE_URL
+from fbtimer.service.config import write_token
+
+
 log = logging.getLogger(__name__)
 
 CLIENT_ID = '503203a5111a38c1af565068dcaca80f56ca1c6983c6ed7c39d374bc67d42179'

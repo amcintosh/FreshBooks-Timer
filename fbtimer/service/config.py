@@ -1,8 +1,9 @@
-import click
-import os
 import configparser
-import time
 import logging
+import os
+import time
+
+import click
 
 log = logging.getLogger(__name__)
 

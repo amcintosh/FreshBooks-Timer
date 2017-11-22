@@ -1,4 +1,5 @@
 import logging
+
 from fbtimer.service.auth import authorize
 from fbtimer.service.config import (
     read_user, write_token, write_business, MissingAuthError

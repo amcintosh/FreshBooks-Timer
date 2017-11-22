@@ -1,7 +1,9 @@
-from fbtimer import FRESHBOOKS_BASE_URL
-from fbtimer.service.auth import auth
-from fbtimer.model.timer import Timer
 import logging
+
+from fbtimer import FRESHBOOKS_BASE_URL
+from fbtimer.model.timer import Timer
+from fbtimer.service.auth import auth
+
 
 log = logging.getLogger(__name__)
 

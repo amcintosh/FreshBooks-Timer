@@ -1,11 +1,13 @@
-import click
 import logging
 import os
-import fbtimer
-from fbtimer.model.user import User
-from fbtimer.service.timer import get_timer, delete_timer
-from fbtimer.service.time_entry import create_new_time_entry, pause_time_entry
+
+import click
 import requests
+
+from fbtimer import __version__
+from fbtimer.model.user import User
+from fbtimer.service.time_entry import create_new_time_entry, pause_time_entry
+from fbtimer.service.timer import get_timer, delete_timer
 from fbtimer.util import parse_datetime_to_local
 
 log = logging.getLogger(__name__)
@@ -23,7 +25,7 @@ def configure_logging(verbose, stdout):
 @click.group(invoke_without_command=True)
 @click.option('-o', '--stdout', is_flag=True, help='Enable logging to stdout. Helpful for debugging.')
 @click.option('-v', '--verbose', is_flag=True, help='Enable debug logging.')
-@click.version_option(version=fbtimer.__version__)
+@click.version_option(version=__version__)
 @click.pass_context
 def cli(ctx, verbose, stdout):
     configure_logging(verbose, stdout)
