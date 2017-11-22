@@ -1,3 +1,4 @@
+from datetime import datetime
 import dateutil.parser
 from dateutil import tz
 
@@ -19,3 +20,7 @@ def parse_datetime_to_utc(value):
 
 def zulu_time(value):
     return value.isoformat() + 'Z'
+
+
+def utcnow_aware():
+    return datetime.utcnow().replace(tzinfo=tz.tzutc())

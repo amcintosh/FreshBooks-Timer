@@ -12,6 +12,21 @@ class Timer:
     def __init__(self, raw_timer):
         self.raw_timer = raw_timer
 
+    def __str__(self):
+        if self.is_running:
+            return 'Running: {}, started at {}'.format(
+                datetime.timedelta(seconds=self.duration),
+                self.start_time.strftime('%-I:%M %p')
+            )
+        return 'Paused: {}, started at {}'.format(
+            datetime.timedelta(seconds=self.duration),
+            self.start_time.strftime('%-I:%M %p')
+        )
+
+    @property
+    def id(self):
+        return self.raw_timer.get('id', False)
+
     @property
     def duration(self):
         duration = 0
