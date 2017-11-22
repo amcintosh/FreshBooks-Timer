@@ -3,7 +3,7 @@ import logging
 import os
 import fbtimer
 from fbtimer.model.user import User
-from fbtimer.service.timer import get_timer
+from fbtimer.service.timer import get_timer, delete_timer
 from fbtimer.service.time_entry import create_new_time_entry, pause_time_entry
 import requests
 from fbtimer.util import parse_datetime_to_local
@@ -85,3 +85,19 @@ def pause():
         click.secho('There is no timer running', fg='magenta')
         return
     timer = pause_time_entry(user, timer)
+
+
+@cli.command()
+def discard():
+    '''Stop and delete the current timer'''
+    user = User()
+    timer = get_timer(user)
+
+    if not timer or not timer.is_running:
+        click.secho('There is no timer running', fg='magenta')
+        return
+    try:
+        timer = delete_timer(user, timer)
+    except requests.exceptions.HTTPError as e:
+        click.secho('Error while trying to delete timer', fg='magenta')
+        log.debug(e)

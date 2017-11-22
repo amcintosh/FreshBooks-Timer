@@ -15,3 +15,11 @@ def get_timer(user):
         return None
     log.debug(res)
     return Timer(res.get('timers')[0])
+
+
+def delete_timer(user, timer):
+    res = auth(user.token).delete(
+        '{}timetracking/business/{}/timers/{}'.format(
+            FRESHBOOKS_BASE_URL, user.business_id, timer.id)
+    )
+    res.raise_for_status()
