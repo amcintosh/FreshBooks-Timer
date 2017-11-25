@@ -1,11 +1,13 @@
-import click
 import logging
 import os
-import fbtimer
-from fbtimer.model.user import User
-from fbtimer.service.timer import get_timer
-from fbtimer.service.time_entry import create_new_time_entry, pause_time_entry
+
+import click
 import requests
+
+from fbtimer import __version__
+from fbtimer.model.user import User
+from fbtimer.service.time_entry import create_new_time_entry, pause_time_entry
+from fbtimer.service.timer import get_timer, delete_timer, log_timer
 from fbtimer.util import parse_datetime_to_local
 
 log = logging.getLogger(__name__)
@@ -23,7 +25,7 @@ def configure_logging(verbose, stdout):
 @click.group(invoke_without_command=True)
 @click.option('-o', '--stdout', is_flag=True, help='Enable logging to stdout. Helpful for debugging.')
 @click.option('-v', '--verbose', is_flag=True, help='Enable debug logging.')
-@click.version_option(version=fbtimer.__version__)
+@click.version_option(version=__version__)
 @click.pass_context
 def cli(ctx, verbose, stdout):
     configure_logging(verbose, stdout)
@@ -68,7 +70,10 @@ def start():
                 parse_datetime_to_local(timer['time_entry'].get('started_at')).strftime('%-I:%M %p')),
             fg='green'
         )
-        click.secho('Go to https://my.freshbooks.com/#/time-tracking to fill out the details.')
+        click.secho(
+            'Go to https://my.freshbooks.com/#/time-tracking to fill out the details.',
+            fg='green'
+        )
 
     except requests.exceptions.HTTPError as e:
         click.secho('Error while trying to start timer', fg='magenta')
@@ -85,3 +90,37 @@ def pause():
         click.secho('There is no timer running', fg='magenta')
         return
     timer = pause_time_entry(user, timer)
+
+
+@cli.command()
+def discard():
+    '''Stop and delete the current timer'''
+    user = User()
+    timer = get_timer(user)
+    click.secho('Discarding timer', fg='green')
+    if not timer:
+        return
+    try:
+        timer = delete_timer(user, timer)
+    except requests.exceptions.HTTPError as e:
+        click.secho('Error while trying to delete timer', fg='magenta')
+        log.debug(e)
+
+
+@cli.command('log')
+def log_time():
+    '''Stop the timer and log it'''
+    user = User()
+    timer = get_timer(user)
+
+    if not timer:
+        click.secho('There is no timer to log', fg='magenta')
+        return
+    try:
+        # Do PUT to /timers with full payload (all time_entries)
+        # each with duration and is_logged = true
+        timer = log_timer(user, timer)
+        click.secho('Your time has been logged', fg='green')
+    except requests.exceptions.HTTPError as e:
+        click.secho('Error while trying to log timer', fg='magenta')
+        log.debug(e)

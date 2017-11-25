@@ -1,9 +1,10 @@
+from datetime import datetime
+import json
+import logging
+
 from fbtimer import FRESHBOOKS_BASE_URL
 from fbtimer.service.auth import auth
 from fbtimer.util import zulu_time, parse_datetime_to_utc, utcnow_aware
-from datetime import datetime
-import logging
-import json
 
 log = logging.getLogger(__name__)
 

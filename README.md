@@ -32,7 +32,10 @@ Options:
   --help         Show this message and exit.
 
 Commands:
-  logout  Log out and delete any authorization data.
-  shart   Shart or resume timers.
-  show    Show any currently running timers.
+  discard  Stop and delete the current timer
+  log      Stop the timer and log it
+  logout   Log out and delete any authorization data.
+  pause    Pause current timer.
+  show     Show any currently running timers.
+  start    Start or resume timers.
 ```

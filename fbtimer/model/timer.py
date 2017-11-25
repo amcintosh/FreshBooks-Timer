@@ -1,6 +1,8 @@
 import datetime
-from dateutil import tz
 import logging
+
+from dateutil import tz
+
 from fbtimer.util import parse_datetime_to_local, parse_datetime_to_utc
 
 

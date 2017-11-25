@@ -1,6 +1,6 @@
 from datetime import datetime
-import dateutil.parser
 from dateutil import tz
+import dateutil.parser
 
 
 def parse_datetime_to_local(value):
