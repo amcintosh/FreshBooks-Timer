@@ -3,9 +3,14 @@ from dateutil import tz
 import dateutil.parser
 
 
+def get_local_tz():
+    '''For patching purposes'''
+    return tz.tzlocal()
+
+
 def parse_datetime_to_local(value):
     utc_zone = tz.tzutc()
-    local_zone = tz.tzlocal()
+    local_zone = get_local_tz()
     start_time = dateutil.parser.parse(value)
     start_time = start_time.replace(tzinfo=utc_zone)
     return start_time.astimezone(local_zone)

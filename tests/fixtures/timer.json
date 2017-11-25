@@ -1,0 +1,30 @@
+{
+  "timers": [
+    {
+      "time_entries": [
+        {
+          "duration": null,
+          "pending_project": null,
+          "pending_task": null,
+          "active": true,
+          "internal": false,
+          "note": null,
+          "created_at": "2017-11-24T20:57:08Z",
+          "is_logged": false,
+          "id": 654321,
+          "started_at": "2017-11-24T20:57:06Z",
+          "client_id": null,
+          "identity_id": 1,
+          "pending_client": null,
+          "task_id": null,
+          "service_id": null,
+          "billed": false,
+          "project_id": null,
+          "billable": true
+        }
+      ],
+      "is_running": true,
+      "id": 123456
+    }
+  ]
+}
