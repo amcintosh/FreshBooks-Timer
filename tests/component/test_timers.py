@@ -1,8 +1,7 @@
 import json
-import os
 import unittest
 from unittest.mock import patch
-
+from dateutil import tz
 from click.testing import CliRunner
 from freezegun import freeze_time
 import httpretty
@@ -15,7 +14,6 @@ from tests import get_fixture
 class TimerTests(unittest.TestCase):
 
     def setUp(self):
-        os.environ['TZ'] = 'America/Toronto'
         patcher = patch('fbtimer.model.user.read_user')
         self.addCleanup(patcher.stop)
         self.mock_user = patcher.start()
@@ -32,8 +30,10 @@ class TimerTests(unittest.TestCase):
     @freeze_time("2017-11-24 21:01:01")
     @httpretty.activate
     @patch('fbtimer.service.timer.auth')
-    def test_get_timer(self, mock_auth):
+    @patch('fbtimer.util.get_local_tz')
+    def test_get_timer(self, mock_tz, mock_auth):
         mock_auth.return_value = requests
+        mock_tz.return_value = tz.tzutc()
         httpretty.register_uri(
             httpretty.GET, 'https://api.freshbooks.com/timetracking/business/123/timers',
             body=json.dumps(get_fixture('timer')),
@@ -46,4 +46,4 @@ class TimerTests(unittest.TestCase):
         self.assertTrue(self.mock_user.called)
         self.assertEqual(httpretty.last_request().method, "GET")
         self.assertEqual(result.exit_code, 0)
-        self.assertEqual(result.output, 'Running: 0:03:55, started at 3:57 PM\n')
+        self.assertEqual(result.output, 'Running: 0:03:55, started at 8:57 PM\n')
