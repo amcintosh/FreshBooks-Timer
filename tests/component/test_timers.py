@@ -1,7 +1,7 @@
 import json
-import time
+import os
 import unittest
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import patch
 
 from click.testing import CliRunner
 from freezegun import freeze_time
@@ -15,6 +15,7 @@ from tests import get_fixture
 class TimerTests(unittest.TestCase):
 
     def setUp(self):
+        os.environ['TZ'] = 'America/Toronto'
         patcher = patch('fbtimer.model.user.read_user')
         self.addCleanup(patcher.stop)
         self.mock_user = patcher.start()
