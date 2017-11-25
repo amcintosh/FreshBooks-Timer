@@ -20,7 +20,7 @@ $ python setup.py install
 
 ### Usage
 
-To get started, run fbtimer and follow the steps to authorize it against your FreshBooks acocunt.
+To get started, run fbtimer and follow the steps to authorize it against your FreshBooks account.
 ```
 $ fbtimer
 ```
