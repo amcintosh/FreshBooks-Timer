@@ -1,3 +1,4 @@
+import io
 import json
 import unittest
 from unittest.mock import patch
@@ -82,3 +83,50 @@ class TimerTests(unittest.TestCase):
         result = runner.invoke(cli, ['show'])
         self.assertEqual(result.exit_code, 0)
         self.assertEqual(result.output, 'No running timer\n')
+
+    @freeze_time("2017-11-24 21:01:01")
+    @httpretty.activate
+    @patch('fbtimer.util.get_local_tz')
+    def test_start_timer(self, mock_tz):
+        mock_tz.return_value = tz.tzutc()
+        httpretty.register_uri(
+            httpretty.GET, 'https://api.freshbooks.com/timetracking/business/123/timers',
+            body='{"timers": []}',
+            status=200
+        )
+        httpretty.register_uri(
+            httpretty.POST, 'https://api.freshbooks.com/timetracking/business/123/time_entries',
+            body=json.dumps(get_fixture('time_entry')),
+            status=200
+        )
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ['start'])
+        post_body = json.loads(str(httpretty.last_request().body, 'utf-8'))
+
+        self.assertEqual(result.exit_code, 0)
+        self.assertEqual(
+            result.output,
+            'Timer started at 8:57 PM\nGo to https://my.freshbooks.com/#/time-tracking to fill out the details.\n'
+        )
+        self.assertEqual(httpretty.last_request().method, 'POST')
+        self.assertDictEqual(
+            post_body,
+            {'time_entry': {'is_logged': False, 'started_at': '2017-11-24T21:01:01Z'}}
+        )
+
+    @freeze_time("2017-11-24 21:01:01")
+    @httpretty.activate
+    @patch('fbtimer.util.get_local_tz')
+    def test_start_timer___running_timer(self, mock_tz):
+        mock_tz.return_value = tz.tzutc()
+        httpretty.register_uri(
+            httpretty.GET, 'https://api.freshbooks.com/timetracking/business/123/timers',
+            body=json.dumps(get_fixture('timer')),
+            status=200
+        )
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ['start'])
+        self.assertEqual(result.exit_code, 0)
+        self.assertEqual(result.output, 'You already have a timer running\n')
