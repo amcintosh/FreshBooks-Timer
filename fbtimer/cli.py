@@ -90,6 +90,7 @@ def pause():
         click.secho('There is no timer running', fg='magenta')
         return
     timer = pause_time_entry(user, timer)
+    click.secho('Timer paused', fg='green')
 
 
 @cli.command()
