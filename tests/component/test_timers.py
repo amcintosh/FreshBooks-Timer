@@ -129,4 +129,70 @@ class TimerTests(unittest.TestCase):
         runner = CliRunner()
         result = runner.invoke(cli, ['start'])
         self.assertEqual(result.exit_code, 0)
+        self.assertEqual(httpretty.last_request().method, 'GET')
         self.assertEqual(result.output, 'You already have a timer running\n')
+
+    @freeze_time("2017-11-24 21:01:01")
+    @httpretty.activate
+    @patch('fbtimer.util.get_local_tz')
+    def test_discard_timer(self, mock_tz):
+        mock_tz.return_value = tz.tzutc()
+        httpretty.register_uri(
+            httpretty.GET, 'https://api.freshbooks.com/timetracking/business/123/timers',
+            body=json.dumps(get_fixture('timer')),
+            status=200
+        )
+        httpretty.register_uri(
+            httpretty.DELETE, 'https://api.freshbooks.com/timetracking/business/123/timers/123456',
+            body=json.dumps(get_fixture('time_entry')),
+            status=204
+        )
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ['discard'])
+        self.assertEqual(result.exit_code, 0)
+        self.assertEqual(httpretty.last_request().method, 'DELETE')
+        self.assertEqual(result.output, 'Discarding timer\n')
+
+    @freeze_time("2017-11-24 21:01:01")
+    @httpretty.activate
+    @patch('fbtimer.util.get_local_tz')
+    def test_pause_timer(self, mock_tz):
+        mock_tz.return_value = tz.tzutc()
+
+        timer = get_fixture('timer')
+        httpretty.register_uri(
+            httpretty.GET, 'https://api.freshbooks.com/timetracking/business/123/timers',
+            body=json.dumps(get_fixture('timer')),
+            status=200
+        )
+
+        timer['timers'][0]['is_running'] = False
+        httpretty.register_uri(
+            httpretty.PUT, 'https://api.freshbooks.com/timetracking/business/123/time_entries/654321',
+            body=json.dumps(timer),
+            status=200
+        )
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ['pause'])
+
+        self.assertEqual(result.exit_code, 0)
+        self.assertEqual(httpretty.last_request().method, 'PUT')
+        self.assertEqual(result.output, 'Timer paused\n')
+
+    @freeze_time("2017-11-24 21:01:01")
+    @httpretty.activate
+    def test_pause_timer___no_running_timer(self):
+        httpretty.register_uri(
+            httpretty.GET, 'https://api.freshbooks.com/timetracking/business/123/timers',
+            body='{"timers": []}',
+            status=200
+        )
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ['pause'])
+
+        self.assertEqual(result.exit_code, 0)
+        self.assertEqual(httpretty.last_request().method, 'GET')
+        self.assertEqual(result.output, 'There is no timer running\n')
