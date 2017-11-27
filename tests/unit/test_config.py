@@ -1,17 +1,16 @@
+import configparser
 import os
+import tempfile
 import unittest
 from unittest.mock import patch
 
 import click
 from freezegun import freeze_time
 
-from fbtimer.service.config import read_user
+from fbtimer.service.config import read_user, write_business, write_token
 
 
 class ConfigTests(unittest.TestCase):
-
-    def setUp(self):
-        pass
 
     @freeze_time("2017-11-24 21:01:01")
     @patch.object(click, 'get_app_dir')
@@ -30,3 +29,28 @@ class ConfigTests(unittest.TestCase):
 
         self.assertDictEqual(token, expected_token)
         self.assertEqual(business, expected_business)
+
+    @freeze_time("2017-11-24 21:01:01")
+    @patch('fbtimer.service.config._get_config')
+    def test_write(self, mock_conf):
+        temp_file = tempfile.mkstemp()
+        config = configparser.ConfigParser()
+        config.read(temp_file)
+        mock_conf.return_value = config
+
+        write_token({
+            'access_token': 'written_token',
+            'refresh_token': 'another_written_token',
+            'expires_at': 1511557600
+        })
+        write_business('My Written Business', 321, 'xyz')
+
+        token, business = read_user()
+
+        self.assertDictEqual(token, {
+            'token_type': 'Bearer',
+            'access_token': 'written_token',
+            'refresh_token': 'another_written_token',
+            'expires_in': 339.0
+        })
+        self.assertEqual(business, ('My Written Business', 321, 'xyz'))
