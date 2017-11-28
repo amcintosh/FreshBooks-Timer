@@ -2,6 +2,7 @@ FreshBooks-Timer
 ================
 
 [![Build Status](https://travis-ci.org/amcintosh/FreshBooks-Timer.svg?branch=master)](https://travis-ci.org/amcintosh/FreshBooks-Timer)
+[![codecov](https://codecov.io/gh/amcintosh/FreshBooks-Timer/branch/master/graph/badge.svg)](https://codecov.io/gh/amcintosh/FreshBooks-Timer)
 
 Track time in FreshBooks via the command line.
 
