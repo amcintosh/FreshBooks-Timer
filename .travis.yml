@@ -10,4 +10,7 @@ python:
 install: "pip install -r requirements-dev.txt"
 
 script:
-  - python setup.py test
+  - py.test --cov=fbtimer tests
+
+after_success:
+  - codecov
