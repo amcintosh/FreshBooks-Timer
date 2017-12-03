@@ -1,8 +1,7 @@
-import configparser
+from mock import patch
 import os
 import tempfile
 import unittest
-from unittest.mock import patch
 
 import click
 from freezegun import freeze_time
@@ -31,12 +30,10 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(business, expected_business)
 
     @freeze_time("2017-11-24 21:01:01")
-    @patch('fbtimer.service.config._get_config')
+    @patch('fbtimer.service.config._get_config_path')
     def test_write(self, mock_conf):
         temp_file = tempfile.mkstemp()
-        config = configparser.ConfigParser()
-        config.read(temp_file)
-        mock_conf.return_value = config
+        mock_conf.return_value = temp_file[1]
 
         write_token({
             'access_token': 'written_token',

@@ -8,7 +8,7 @@ Track time in FreshBooks via the command line.
 
 ### Installation and Requirements
 
-FreshBooks-Timer has been written for Python 3.3+.
+FreshBooks-Timer has been written for Python 2.7 and 3.3+.
 
 To install (either from PyPI or source):
 ```

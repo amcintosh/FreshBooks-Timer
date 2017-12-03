@@ -1,6 +1,7 @@
 import json
+from mock import patch
 import unittest
-from unittest.mock import patch
+
 from dateutil import tz
 from click.testing import CliRunner
 from freezegun import freeze_time
@@ -101,7 +102,7 @@ class TimerTests(unittest.TestCase):
 
         runner = CliRunner()
         result = runner.invoke(cli, ['start'])
-        post_body = json.loads(str(httpretty.last_request().body, 'utf-8'))
+        post_body = json.loads(httpretty.last_request().body.decode('utf-8'))
 
         self.assertEqual(result.exit_code, 0)
         self.assertEqual(
