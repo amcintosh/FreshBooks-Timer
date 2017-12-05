@@ -49,8 +49,12 @@ def write_business(business_name, business_id, account_id):
     _write_config(config)
 
 
+def _get_config_path():
+    return os.path.join(click.get_app_dir('fbtimer'), 'settings.ini')
+
+
 def _get_config():
-    conf_path = os.path.join(click.get_app_dir('fbtimer'), 'settings.ini')
+    conf_path = _get_config_path()
     config = configparser.ConfigParser()
     config.read(conf_path)
     return config
@@ -58,10 +62,13 @@ def _get_config():
 
 def _write_config(config):
     conf_path = click.get_app_dir('fbtimer')
-    os.makedirs(conf_path, exist_ok=True)
+    try:
+        os.makedirs(conf_path)
+    except OSError:
+        log.debug('Config directory already exists')
 
     log.debug('Writing token to "%s"', conf_path)
-    conf = open(os.path.join(conf_path, 'settings.ini'), 'w')
+    conf = open(_get_config_path(), 'w')
     config.write(conf)
     conf.close()
 

@@ -1,5 +1,6 @@
 import logging
 
+import click
 from requests_oauthlib import OAuth2Session
 
 from fbtimer import FRESHBOOKS_BASE_URL
@@ -37,9 +38,8 @@ def authorize():
     authorization_url, state = oauth.authorization_url(
         'https://my.freshbooks.com/service/auth/oauth/authorize')
 
-    print('Please go to %s and authorize access.' % authorization_url)
-
-    authorization_response = input('Enter the full callback URL: ')
+    click.secho('Please go to {} and authorize access.'.format(authorization_url), fg='blue')
+    authorization_response = click.prompt('Enter the full callback URL')
 
     oauth.headers.update(fb_headers())
     token = oauth.fetch_token(

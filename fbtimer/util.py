@@ -3,7 +3,7 @@ from dateutil import tz
 import dateutil.parser
 
 
-def get_local_tz():
+def get_local_tz():  # pragma: nocover
     '''For patching purposes'''
     return tz.tzlocal()
 
