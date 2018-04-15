@@ -107,7 +107,7 @@ class TimerTests(unittest.TestCase):
         self.assertEqual(result.exit_code, 0)
         self.assertEqual(
             result.output,
-            'Timer started at 8:57 PM\nGo to https://my.freshbooks.com/#/time-tracking to fill out the details.\n'
+            'Timer started at 8:57 PM\n'
         )
         self.assertEqual(httpretty.last_request().method, 'POST')
         self.assertDictEqual(
