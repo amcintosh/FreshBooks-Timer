@@ -30,15 +30,15 @@ def delete_timer(user, timer):
 
 
 def log_timer(user, timer):
-    for entry in timer.raw_timer.get('time_entries'):
+    for entry in timer.raw_data.get('time_entries'):
         del entry['active']
         del entry['identity_id']
         del entry['created_at']
 
-    timer.raw_timer.get('time_entries')[-1].update(
+    timer.raw_data.get('time_entries')[-1].update(
         duration=(
             utcnow_aware() - parse_datetime_to_utc(
-                timer.raw_timer.get('time_entries')[-1].get('started_at'))
+                timer.raw_data.get('time_entries')[-1].get('started_at'))
         ).total_seconds(),
         timer={"id": timer.id}
     )
@@ -46,7 +46,7 @@ def log_timer(user, timer):
     res = auth(user.token).put(
         '{}timetracking/business/{}/timers/{}'.format(
             FRESHBOOKS_BASE_URL, user.business_id, timer.id),
-        data=json.dumps({'timer': {'time_entries': timer.raw_timer.get('time_entries')}})
+        data=json.dumps({'timer': {'time_entries': timer.raw_data.get('time_entries')}})
     )
     log.debug(res.text)
     res.raise_for_status()

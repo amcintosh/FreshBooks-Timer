@@ -35,11 +35,7 @@ def create_new_time_entry(user, timer=None):
 
 
 def pause_time_entry(user, timer):
-    active_time_entry = None
-    for entry in timer.raw_timer.get('time_entries'):
-        if not entry.get('duration'):
-            active_time_entry = entry
-            break
+    active_time_entry = timer.active_time_entry
 
     active_time_entry.update(
         is_logged=False,
@@ -60,3 +56,26 @@ def pause_time_entry(user, timer):
     log.debug(res.text)
     res.raise_for_status()
     return res.json()
+
+def update_time_entry(user, timer, client_id=None, internal_client=False):
+    active_time_entry = timer.active_time_entry
+
+    if client_id:
+        active_time_entry['client_id'] = client_id
+    elif internal_client:
+        active_time_entry['client_id'] = None
+        active_time_entry['internal'] = True
+
+    time_entry = {
+        'time_entry': active_time_entry
+    }
+
+    res = auth(user.token).put(
+        '{}timetracking/business/{}/time_entries/{}'.format(
+            FRESHBOOKS_BASE_URL, user.business_id, active_time_entry.get('id')),
+        data=json.dumps(time_entry)
+    )
+    log.debug(res.text)
+    res.raise_for_status()
+    return res.json()
+

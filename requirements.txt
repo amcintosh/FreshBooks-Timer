@@ -2,3 +2,4 @@ click
 configparser
 requests-oauthlib
 python-dateutil
+colorama
