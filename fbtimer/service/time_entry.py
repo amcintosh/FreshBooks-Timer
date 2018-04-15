@@ -57,6 +57,7 @@ def pause_time_entry(user, timer):
     res.raise_for_status()
     return res.json()
 
+
 def update_time_entry(user, timer, client_id=None, internal_client=False):
     active_time_entry = timer.active_time_entry
 
@@ -78,4 +79,3 @@ def update_time_entry(user, timer, client_id=None, internal_client=False):
     log.debug(res.text)
     res.raise_for_status()
     return res.json()
-

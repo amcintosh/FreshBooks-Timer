@@ -1,4 +1,3 @@
-import json
 import logging
 
 from fbtimer import FRESHBOOKS_BASE_URL
