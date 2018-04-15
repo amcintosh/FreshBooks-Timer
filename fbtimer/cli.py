@@ -160,6 +160,7 @@ def save_details(ctx):
 
 def choose_client(ctx, user, timer):
     clients = get_recent_clients(user)
+
     click.secho('Recent Clients:', fg='green')
     click.secho('1. Internal ({})'.format(user.business_name), fg='blue')
     for idx, client in enumerate(clients):
