@@ -2,9 +2,7 @@ import json
 from mock import patch
 import unittest
 
-from dateutil import tz
 from click.testing import CliRunner
-from freezegun import freeze_time
 import httpretty
 import requests
 
