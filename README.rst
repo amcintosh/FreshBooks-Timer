@@ -41,6 +41,7 @@ Usage:
       --help         Show this message and exit.
 
     Commands:
+      details  Update timer details
       discard  Stop and delete the current timer
       log      Stop the timer and log it
       logout   Log out and delete any authorization data.
