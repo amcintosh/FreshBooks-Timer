@@ -1,0 +1,17 @@
+body {
+	background-color: #0D83DD;
+}
+img.timer {
+	width: 150px;
+}
+.main {
+	margin-top: 200px;
+	background-color: white;
+	padding: 20px;
+}
+#authCode {
+	width:80%;
+}
+#authButton {
+	display: none;
+}

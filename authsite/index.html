@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>FreshBooks CLI Timer</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<link rel="shortcut icon" type="image/png" href="assets/fbtimer_icon.png"/>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+		<link rel="stylesheet" href="assets/main.css" />
+	</head>
+	<body>
+			<header id="header">
+				<div class="container">
+					<div class="row">
+    				<div class="col"></div>
+    				<div class="col-7 main text-center">
+    					<img class="timer rounded float-right" src="assets/fbtimer.png" alt="" />
+							<h1>FreshBooks CLI Timer</h1>
+							<p>Track time in FreshBooks via the command line.</p>
+							<p>
+								<button type="button" class="btn btn-primary" id="authButton" data-toggle="modal" data-target="#authCodeModal">Authorize</button>
+								<a class="btn btn-secondary" href="https://github.com/amcintosh/FreshBooks-Timer">Learn More</a>
+							</p>
+						</div>
+    				<div class="col"></div>
+  				</div>
+				</div>
+			</header>
+
+			<div class="modal" id="authCodeModal" tabindex="-1" role="dialog">
+  			<div class="modal-dialog modal-dialog-centered" role="document">
+    			<div class="modal-content">
+      			<div class="modal-body text-center">
+      				<p>Authorize FreshBooks CLI Timer by pasting this code into your console.</p>
+        			<p>
+								<input id="authCode" value="https://github.com/zenorocha/clipboard.js.git">
+								<button class="btn btn-primary" data-clipboard-target="#authCode">Copy</button>
+							</p>
+      			</div>
+			    </div>
+			  </div>
+			</div>
+			<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+			<script src="assets/clipboard.min.js"></script>
+			<script>
+				new ClipboardJS('.btn');
+				var url_string = window.location.href;
+				var url = new URL(url_string);
+				var code = url.searchParams.get('code');
+				if (code) {
+					$('#authCode').val(code);
+					$('#authButton').show();
+					$('#authCodeModal').modal();
+				}
+			</script>
+	</body>
+</html>

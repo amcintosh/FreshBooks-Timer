@@ -33,18 +33,23 @@ def auth(token):
 
 
 def authorize():
-    redirect_uri = 'https://github.com/amcintosh/FreshBooks-Timer'
+    redirect_uri = 'https://amcintosh.net/fbtimer/'
     oauth = OAuth2Session(CLIENT_ID, redirect_uri=redirect_uri)
     authorization_url, state = oauth.authorization_url(
         'https://my.freshbooks.com/service/auth/oauth/authorize')
 
+    click.secho('First we need access to your FreshBooks account. '
+                'Press a key to open your browser and obtain an authorization code',
+                fg='blue')
+    click.pause()
     click.secho('Please go to {} and authorize access.'.format(authorization_url), fg='blue')
-    authorization_response = click.prompt('Enter the full callback URL')
+    click.launch(authorization_url)
+    authorization_response = click.prompt('Enter the authorization code')
 
     oauth.headers.update(fb_headers())
     token = oauth.fetch_token(
         token_url='{}{}'.format(FRESHBOOKS_BASE_URL, FRESHBOOKS_TOKEN_URL),
-        authorization_response=authorization_response,
+        code=authorization_response,
         client_secret=CLIENT_SECRET,
         token=state
     )
