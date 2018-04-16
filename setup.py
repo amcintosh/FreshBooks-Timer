@@ -2,14 +2,14 @@ from setuptools import setup, find_packages
 import fbtimer
 
 setup(
-    name='FreshBooks Timer',
+    name='fbtimer',
     version=fbtimer.__version__,
     author=fbtimer.__author__,
     author_email='andrew@amcintosh.net',
-    description='CLI Timer for FreshBooks',
+    description='Track time in FreshBooks via the command line',
     long_description=open('README.rst').read(),
     url='https://github.com/amcintosh/FreshBooks-Timer',
-    download_url='https://github.com/amcintosh/FreshBooks-Timer/tarball/{}'.format(
+    download_url='https://github.com/amcintosh/FreshBooks-Timer/archive/{}.tar.gz'.format(
         fbtimer.__version__),
     keywords=['FreshBooks', 'Time Tracking'],
     license=fbtimer.__license__,
