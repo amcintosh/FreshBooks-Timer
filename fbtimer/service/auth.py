@@ -40,8 +40,7 @@ def authorize():
 
     click.secho('First we need access to your FreshBooks account. '
                 'Press a key to open your browser and obtain an authorization code',
-                fg='blue'
-    )
+                fg='blue')
     click.pause()
     click.secho('Please go to {} and authorize access.'.format(authorization_url), fg='blue')
     click.launch(authorization_url)
