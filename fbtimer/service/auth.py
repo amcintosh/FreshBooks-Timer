@@ -16,7 +16,7 @@ CLIENT_SECRET = '24c720272db55588895944729d562ca5baff2e1ced7039724dfeb5500fc311f
 FRESHBOOKS_TOKEN_URL = 'auth/oauth/token'
 
 
-def auth(token):
+def auth(token, include_content_type=True):
     extra = {
         'client_id': CLIENT_ID,
         'client_secret': CLIENT_SECRET,
@@ -28,7 +28,7 @@ def auth(token):
         auto_refresh_kwargs=extra,
         token_updater=write_token
     )
-    client.headers.update(fb_headers())
+    client.headers.update(fb_headers(include_content_type))
     return client
 
 
@@ -57,8 +57,10 @@ def authorize():
     return token
 
 
-def fb_headers():
-    return {
+def fb_headers(include_content_type=True):
+    headers = {
         "Api-Version": "alpha",
-        "Content-Type": "application/json"
     }
+    if include_content_type:
+        headers["Content-Type"] = "application/json"
+    return headers
