@@ -236,7 +236,6 @@ class DetailsTests(unittest.TestCase):
             ])
         )
 
-
     @httpretty.activate
     def test_details__internal_project(self):
         timer = get_fixture('timer')
@@ -277,7 +276,6 @@ class DetailsTests(unittest.TestCase):
                 self.UPDATE_TEXT
             ])
         )
-
 
     @httpretty.activate
     def test_details__set_service(self):
@@ -325,7 +323,6 @@ class DetailsTests(unittest.TestCase):
                 self.UPDATE_TEXT
             ])
         )
-
 
     @httpretty.activate
     def test_details__set_note(self):

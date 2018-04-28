@@ -1,7 +1,7 @@
 import logging
 
 from fbtimer import FRESHBOOKS_BASE_URL
-from fbtimer.model.project import Project, Service
+from fbtimer.model.project import Project
 from fbtimer.service.auth import auth
 
 

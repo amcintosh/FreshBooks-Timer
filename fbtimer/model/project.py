@@ -1,5 +1,3 @@
-import logging
-
 from fbtimer.model import BaseModel
 
 
@@ -15,6 +13,7 @@ class Project(BaseModel):
     @property
     def services(self):
         return [Service(a) for a in self.raw_data.get('services')]
+
 
 class Service(BaseModel):
 
