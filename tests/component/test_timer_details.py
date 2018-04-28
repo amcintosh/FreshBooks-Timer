@@ -10,7 +10,7 @@ from fbtimer.cli import cli
 from tests import get_fixture
 
 
-class TimerTests(unittest.TestCase):
+class DetailsTests(unittest.TestCase):
     UPDATE_TEXT = 'Update:\n1. Client\n2. Project\n3. Service\n4. Note\n0. Quit\n'
     RECENT_CLIENTS_TEXT = (
         'Recent Clients:\n'
@@ -190,5 +190,167 @@ class TimerTests(unittest.TestCase):
             ''.join([
                 self.RECENT_CLIENTS_TEXT,
                 'Setting client to Internal (My Business)\n'
+            ])
+        )
+
+    @httpretty.activate
+    def test_details__set_project(self):
+        timer = get_fixture('timer')
+        timer['timers'][0]['time_entries'][0]['client_id'] = 123
+        httpretty.register_uri(
+            httpretty.GET, 'https://api.freshbooks.com/timetracking/business/123/timers',
+            body=json.dumps(timer),
+            status=200
+        )
+        httpretty.register_uri(
+            httpretty.GET, 'https://api.freshbooks.com/projects/business/123/projects?active=1&page=0',
+            body=json.dumps(get_fixture('projects')),
+            status=200
+        )
+        timer['timers'][0]['time_entries'][0]['project_id'] = 11
+        httpretty.register_uri(
+            httpretty.PUT, 'https://api.freshbooks.com/timetracking/business/123/time_entries/654321',
+            body=json.dumps(timer),
+            status=200
+        )
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ['details'], input='2\n2\n0\n')
+
+        self.assertEqual(result.exit_code, 0)
+        self.assertEqual(
+            result.output,
+            ''.join([
+                self.UPDATE_TEXT,
+                'Projects:\n'
+                '1. Plate Production\n'
+                '2. Mug Production\n'
+                '0. Go back\n'
+                'Projects:\n'
+                '1. Plate Production\n'
+                '2. Mug Production\n'
+                '0. Go back\n'
+                'Setting project to Mug Production\n',
+                self.UPDATE_TEXT,
+                self.UPDATE_TEXT
+            ])
+        )
+
+    @httpretty.activate
+    def test_details__internal_project(self):
+        timer = get_fixture('timer')
+        timer['timers'][0]['time_entries'][0]['internal'] = True
+        httpretty.register_uri(
+            httpretty.GET, 'https://api.freshbooks.com/timetracking/business/123/timers',
+            body=json.dumps(timer),
+            status=200
+        )
+        httpretty.register_uri(
+            httpretty.GET, 'https://api.freshbooks.com/projects/business/123/projects?active=1&page=0',
+            body=json.dumps(get_fixture('projects')),
+            status=200
+        )
+        timer['timers'][0]['time_entries'][0]['project_id'] = 10
+        httpretty.register_uri(
+            httpretty.PUT, 'https://api.freshbooks.com/timetracking/business/123/time_entries/654321',
+            body=json.dumps(timer),
+            status=200
+        )
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ['details'], input='2\n1\n0\n')
+
+        self.assertEqual(result.exit_code, 0)
+        self.assertEqual(
+            result.output,
+            ''.join([
+                self.UPDATE_TEXT,
+                'Projects:\n'
+                '1. Project ALF\n'
+                '0. Go back\n'
+                'Projects:\n'
+                '1. Project ALF\n'
+                '0. Go back\n'
+                'Setting project to Project ALF\n',
+                self.UPDATE_TEXT,
+                self.UPDATE_TEXT
+            ])
+        )
+
+    @httpretty.activate
+    def test_details__set_service(self):
+        timer = get_fixture('timer')
+        timer['timers'][0]['time_entries'][0].update(internal=True, project_id=10)
+        httpretty.register_uri(
+            httpretty.GET, 'https://api.freshbooks.com/timetracking/business/123/timers',
+            body=json.dumps(timer),
+            status=200
+        )
+        httpretty.register_uri(
+            httpretty.GET, 'https://api.freshbooks.com/projects/business/123/project/10',
+            body=json.dumps(get_fixture('project')),
+            status=200
+        )
+        timer['timers'][0]['time_entries'][0]['service_id'] = 3
+        httpretty.register_uri(
+            httpretty.PUT, 'https://api.freshbooks.com/timetracking/business/123/time_entries/654321',
+            body=json.dumps(timer),
+            status=200
+        )
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ['details'], input='3\n3\n0\n')
+
+        self.assertEqual(result.exit_code, 0)
+        self.assertEqual(
+            result.output,
+            ''.join([
+                self.UPDATE_TEXT,
+                'Services:\n'
+                '1. Video Monitoring\n'
+                '2. Cat Feeding\n'
+                '3. Cat Stalking\n'
+                '4. Research\n'
+                '0. Go back\n'
+                'Services:\n'
+                '1. Video Monitoring\n'
+                '2. Cat Feeding\n'
+                '3. Cat Stalking\n'
+                '4. Research\n'
+                '0. Go back\n'
+                'Setting service to Cat Stalking\n',
+                self.UPDATE_TEXT,
+                self.UPDATE_TEXT
+            ])
+        )
+
+    @httpretty.activate
+    def test_details__set_note(self):
+        timer = get_fixture('timer')
+        timer['timers'][0]['time_entries'][0]['internal'] = True
+        httpretty.register_uri(
+            httpretty.GET, 'https://api.freshbooks.com/timetracking/business/123/timers',
+            body=json.dumps(timer),
+            status=200
+        )
+        timer['timers'][0]['time_entries'][0]['note'] = 'I added a note right here'
+        httpretty.register_uri(
+            httpretty.PUT, 'https://api.freshbooks.com/timetracking/business/123/time_entries/654321',
+            body=json.dumps(timer),
+            status=200
+        )
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ['details'], input='4\nI added a note right here\n0\n')
+
+        self.assertEqual(result.exit_code, 0)
+        self.assertEqual(
+            result.output,
+            ''.join([
+                self.UPDATE_TEXT,
+                'Note "q" to exit: \n'
+                'Note "q" to exit: I added a note right here\n'
+                'Setting note\n',
+                self.UPDATE_TEXT
             ])
         )

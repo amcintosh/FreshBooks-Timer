@@ -7,6 +7,7 @@ import requests
 from fbtimer import __version__
 from fbtimer.model.user import User
 from fbtimer.service.client import get_recent_clients
+from fbtimer.service.project import get_project, get_client_projects
 from fbtimer.service.time_entry import (
     create_new_time_entry, pause_time_entry, update_time_entry
 )
@@ -154,8 +155,12 @@ def save_details(ctx):
 
         if choice == '1':
             choose_client(ctx, user, timer)
-        elif choice in ['2', '3', '4']:
-            update_not_implemented()
+        if choice == '2':
+            choose_project(ctx, user, timer)
+        if choice == '3':
+            choose_service(ctx, user, timer)
+        if choice == '4':
+            set_note(ctx, user, timer)
 
 
 def choose_client(ctx, user, timer):
@@ -187,9 +192,67 @@ def choose_client(ctx, user, timer):
         choose_client(ctx, user, timer)
 
 
-def update_not_implemented():
-    click.secho('Not yet implemented', fg='green')
-    click.secho(
-        'Go to https://my.freshbooks.com/#/time-tracking to fill out the details.',
-        fg='green'
-    )
+def choose_project(ctx, user, timer):
+    client_projects = get_client_projects(user, timer.client_id)
+
+    click.secho('Projects:', fg='green')
+    for idx, project in enumerate(client_projects):
+        click.secho('{}. {}'.format(idx+1, project), fg='blue')
+    click.secho('0. Go back', fg='blue')
+
+    choice = click.getchar()
+
+    if choice == '0':
+        return
+    try:
+        selected = client_projects[int(choice) - 1]
+        update_time_entry(user, timer, project_id=selected.id)
+        click.secho('Setting project to {}'.format(selected), fg='green')
+    except requests.exceptions.HTTPError as e:
+        click.secho('Error while trying to update timer', fg='magenta')
+        log.debug(e)
+    except Exception as e:
+        log.debug(e)
+        choose_project(ctx, user, timer)
+
+
+def choose_service(ctx, user, timer):
+    if not timer.project_id:
+        choose_project(ctx, user, timer)
+    project = get_project(user, timer.project_id)
+    services = project.services
+
+    click.secho('Services:', fg='green')
+    for idx, service in enumerate(services):
+        click.secho('{}. {}'.format(idx+1, service), fg='blue')
+    click.secho('0. Go back', fg='blue')
+
+    choice = click.getchar()
+
+    if choice == '0':
+        return
+    try:
+        selected = services[int(choice) - 1]
+        update_time_entry(user, timer, service_id=selected.id)
+        click.secho('Setting service to {}'.format(selected), fg='green')
+    except requests.exceptions.HTTPError as e:
+        click.secho('Error while trying to update timer', fg='magenta')
+        log.debug(e)
+    except Exception as e:
+        log.debug(e)
+        choose_service(ctx, user, timer)
+
+
+def set_note(ctx, user, timer):
+    note = click.prompt('Note "q" to exit')
+    if note == 'q':
+        return
+
+    try:
+        update_time_entry(user, timer, note=note)
+        click.secho('Setting note', fg='green')
+    except requests.exceptions.HTTPError as e:
+        click.secho('Error while trying to update timer', fg='magenta')
+        log.debug(e)
+    except Exception as e:
+        log.debug(e)

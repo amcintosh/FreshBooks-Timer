@@ -1,0 +1,113 @@
+{
+    "meta": {
+        "sort": [],
+        "per_page": 30,
+        "total": 2,
+        "page": 1,
+        "pages": 1
+    },
+    "projects": [
+        {
+            "due_date": null,
+            "logged_duration": null,
+            "fixed_price": null,
+            "description": null,
+            "title": "Project ALF",
+            "updated_at": "2018-01-03T16:38:47",
+            "created_at": "2018-01-03T16:38:47",
+            "budget": null,
+            "billed_amount": "0.00",
+            "sample": false,
+            "active": true,
+            "rate": null,
+            "internal": true,
+            "client_id": null,
+            "project_type": "fixed_price",
+            "billing_method": "project_rate",
+            "services": [
+                {
+                    "id": 1,
+                    "business_id": 24680,
+                    "name": "Video Monitoring"
+                },
+                {
+                    "id": 2,
+                    "business_id": 24680,
+                    "name": "Cat Feeding"
+                },
+                {
+                    "id": 3,
+                    "business_id": 24680,
+                    "name": "Cat Stalking"
+                },
+                {
+                    "id": 4,
+                    "business_id": 24680,
+                    "name": "Research"
+                }
+            ],
+            "group_id": 13579,
+            "billed_status": "unbilled",
+            "id": 10,
+            "complete": false
+        },
+        {
+            "due_date": null,
+            "logged_duration": null,
+            "fixed_price": null,
+            "description": null,
+            "title": "Plate Production",
+            "updated_at": "2017-10-05T18:16:01",
+            "created_at": "2017-10-05T18:16:01",
+            "budget": null,
+            "billed_amount": "0.00",
+            "sample": false,
+            "active": true,
+            "rate": null,
+            "internal": false,
+            "client_id": 123,
+            "project_type": "fixed_price",
+            "billing_method": "project_rate",
+            "services": [
+                {
+                    "id": 4,
+                    "business_id": 24680,
+                    "name": "Research"
+                }
+            ],
+            "group_id": 97531,
+            "billed_status": "unbilled",
+            "id": 11,
+            "complete": false
+        },
+        {
+            "due_date": null,
+            "logged_duration": null,
+            "fixed_price": null,
+            "description": null,
+            "title": "Mug Production",
+            "updated_at": "2017-10-05T18:16:01",
+            "created_at": "2017-10-05T18:16:01",
+            "budget": null,
+            "billed_amount": "0.00",
+            "sample": false,
+            "active": true,
+            "rate": null,
+            "internal": false,
+            "client_id": 123,
+            "project_type": "fixed_price",
+            "billing_method": "project_rate",
+            "services": [
+                {
+                    "id": 4,
+                    "business_id": 24680,
+                    "name": "Research"
+                }
+            ],
+            "group_id": 97531,
+            "billed_status": "unbilled",
+            "id": 12,
+            "complete": true
+        }
+    ]
+}

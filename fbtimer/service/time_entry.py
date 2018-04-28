@@ -58,7 +58,8 @@ def pause_time_entry(user, timer):
     return res.json()
 
 
-def update_time_entry(user, timer, client_id=None, internal_client=False):
+def update_time_entry(user, timer, client_id=None, internal_client=False,
+                      project_id=None, service_id=None, note=None):
     active_time_entry = timer.active_time_entry
 
     if client_id:
@@ -66,6 +67,12 @@ def update_time_entry(user, timer, client_id=None, internal_client=False):
     elif internal_client:
         active_time_entry['client_id'] = None
         active_time_entry['internal'] = True
+    if project_id:
+        active_time_entry['project_id'] = project_id
+    if service_id:
+        active_time_entry['service_id'] = service_id
+    if note:
+        active_time_entry['note'] = note
 
     time_entry = {
         'time_entry': active_time_entry

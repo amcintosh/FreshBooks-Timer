@@ -57,6 +57,10 @@ class Timer(BaseModel):
         return self.active_time_entry.get('client_id')
 
     @property
+    def project_id(self):
+        return self.active_time_entry.get('project_id')
+
+    @property
     def has_client(self):
         active_time_entry = self.active_time_entry
         return active_time_entry.get('client_id') or active_time_entry.get('internal')
