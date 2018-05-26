@@ -1,4 +1,5 @@
 import logging
+import os
 
 import click
 from requests_oauthlib import OAuth2Session
@@ -36,7 +37,7 @@ def authorize():
     redirect_uri = 'https://amcintosh.net/fbtimer/'
     oauth = OAuth2Session(CLIENT_ID, redirect_uri=redirect_uri)
     authorization_url, state = oauth.authorization_url(
-        'https://my.freshbooks.com/service/auth/oauth/authorize')
+        os.getenv('FBTIMER_AUTH_URL', 'https://my.freshbooks.com/service/auth/oauth/authorize'))
 
     click.secho('First we need access to your FreshBooks account. '
                 'Press a key to open your browser and obtain an authorization code',
