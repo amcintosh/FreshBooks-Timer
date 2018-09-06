@@ -8,6 +8,19 @@ from fbtimer.service.auth import auth
 log = logging.getLogger(__name__)
 
 
+def get_client(user, client_id):
+    res = auth(user.token).get(
+        '{}accounting/account/{}/users/clients/{}'.format(
+            FRESHBOOKS_BASE_URL, user.account_id, client_id)
+    ).json()
+    log.debug(res)
+
+    if not res['response']['result'].get('client'):
+        return None
+
+    return Client(res['response']['result'].get('client'))
+
+
 def get_recent_clients(user):
     res = auth(user.token).get(
         '{}accounting/account/{}/users/clients?page=1&per_page=5'

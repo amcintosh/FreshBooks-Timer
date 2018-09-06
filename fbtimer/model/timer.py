@@ -54,13 +54,25 @@ class Timer(BaseModel):
 
     @property
     def client_id(self):
-        return self.active_time_entry.get('client_id')
+        return self.raw_data.get('time_entries')[-1].get('client_id')
+
+    @property
+    def internal(self):
+        return self.raw_data.get('time_entries')[-1].get('internal')
 
     @property
     def project_id(self):
-        return self.active_time_entry.get('project_id')
+        return self.raw_data.get('time_entries')[-1].get('project_id')
+
+    @property
+    def service_id(self):
+        return self.raw_data.get('time_entries')[-1].get('service_id')
 
     @property
     def has_client(self):
-        active_time_entry = self.active_time_entry
-        return active_time_entry.get('client_id') or active_time_entry.get('internal')
+        latest_time_entry = self.raw_data.get('time_entries')[-1]
+        return latest_time_entry.get('client_id') or latest_time_entry.get('internal')
+
+    @property
+    def note(self):
+        return self.raw_data.get('time_entries')[-1].get('note')

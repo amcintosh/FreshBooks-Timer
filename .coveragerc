@@ -1,7 +1,7 @@
 [run]
 branch = True
 cover_pylib = False
-source = whoisbot
+source = fbtimer
 
 [report]
 # Regexes for lines to exclude from consideration
