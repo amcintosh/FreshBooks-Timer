@@ -6,8 +6,9 @@ import requests
 
 from fbtimer import __version__
 from fbtimer.model.user import User
-from fbtimer.service.client import get_recent_clients
+from fbtimer.service.client import get_recent_clients, get_client
 from fbtimer.service.project import get_project, get_client_projects
+from fbtimer.service.service import get_service
 from fbtimer.service.time_entry import (
     create_new_time_entry, pause_time_entry, update_time_entry
 )
@@ -44,17 +45,34 @@ def logout():
 
 
 @cli.command()
-def show():
+@click.option('-a', '--all', is_flag=True, help='Show all timer details.')
+def show(all):
     '''Show any currently running timers. The default command.'''
-    timer = get_timer(User())
+    user = User()
+    timer = get_timer(user)
 
     if not timer:
         click.secho('No running timer', fg='blue')
         return
-    if timer.is_running:
-        click.secho(str(timer), fg='green')
-    else:
-        click.secho(str(timer), fg='magenta')
+    colour = 'green' if timer.is_running else 'magenta'
+
+    click.secho(str(timer), fg=colour)
+    if all:
+        text = []
+        if timer.client_id:
+            client = get_client(user, timer.client_id)
+            text.append('Client: {}'.format(client))
+        elif timer.internal:
+            text.append('Client: Internal ({})'.format(user.business_name))
+        if timer.project_id:
+            project = get_project(user, timer.project_id)
+            text.append('Project: {}'.format(project))
+        if timer.service_id:
+            service = get_service(user, timer.service_id)
+            text.append('Service: {}'.format(service))
+        click.secho(', '.join(text), fg=colour)
+        if timer.note:
+            click.secho('Note: {}'.format(timer.note), fg=colour)
 
 
 @cli.command()
@@ -169,7 +187,7 @@ def choose_client(ctx, user, timer):
     click.secho('Recent Clients:', fg='green')
     click.secho('1. Internal ({})'.format(user.business_name), fg='blue')
     for idx, client in enumerate(clients):
-        click.secho('{}. {}'.format(idx+2, client), fg='blue')
+        click.secho('{}. {}'.format(idx + 2, client), fg='blue')
     click.secho('0. Go back', fg='blue')
 
     choice = click.getchar()
@@ -197,7 +215,7 @@ def choose_project(ctx, user, timer):
 
     click.secho('Projects:', fg='green')
     for idx, project in enumerate(client_projects):
-        click.secho('{}. {}'.format(idx+1, project), fg='blue')
+        click.secho('{}. {}'.format(idx + 1, project), fg='blue')
     click.secho('0. Go back', fg='blue')
 
     choice = click.getchar()
@@ -224,7 +242,7 @@ def choose_service(ctx, user, timer):
 
     click.secho('Services:', fg='green')
     for idx, service in enumerate(services):
-        click.secho('{}. {}'.format(idx+1, service), fg='blue')
+        click.secho('{}. {}'.format(idx + 1, service), fg='blue')
     click.secho('0. Go back', fg='blue')
 
     choice = click.getchar()

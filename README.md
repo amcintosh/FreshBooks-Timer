@@ -67,6 +67,16 @@ Usage: fbtimer start [OPTIONS]
 Options:
   -d, --details  Fill out timer details when started.
   --help         Show this message and exit.
+
+$ fbtimer show --help
+
+Usage: fbtimer show [OPTIONS]
+
+  Show any currently running timers. The default command.
+
+Options:
+  -a, --all  Show all timer details.
+  --help     Show this message and exit.
 ```
 
 ### Usage Examples
@@ -91,8 +101,8 @@ Recent Clients:
 3. William Tanner
 0. Go back
 
-$ 1
-Setting client to Date Dude
+$ 2
+Setting client to Gordon Shumway
 Update:
 1. Client
 2. Project
@@ -101,6 +111,11 @@ Update:
 0. Quit
 
 $ 0
+
+$ fbtimer show --all
+Running: 0:25:51, started at 2:50 PM
+Client: Gordon Shumway
+
 $ fbtimer log
 Your time has been logged
 ```
@@ -111,9 +126,8 @@ Your time has been logged
 Timer started at 2:50 PM
 Recent Clients:
 1. Internal (FreshBooks)
-2. Jenn Kim
-3. Date Dude
-4. lolpdf (PDF Man)
+2. Gordon Shumway
+3. William Tanner
 0. Go back
 ```
 
