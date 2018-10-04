@@ -41,6 +41,7 @@ class Timer(BaseModel):
         for time_entry in self.raw_data.get('time_entries'):
             if not time_entry.get('duration'):
                 return time_entry
+        return self.raw_data.get('time_entries')[-1]
 
     @property
     def start_time(self):
@@ -76,3 +77,12 @@ class Timer(BaseModel):
     @property
     def note(self):
         return self.raw_data.get('time_entries')[-1].get('note')
+
+    @property
+    def billable(self):
+        return self.raw_data.get('time_entries')[-1].get('billable')
+
+    def billable_msg(self):
+        if self.billable:
+            return 'billable'
+        return 'not billable'
