@@ -13,9 +13,6 @@ def create_new_time_entry(user, timer=None):
     time_entry = {
         'time_entry': {
             'is_logged': False,
-            # 'note': 'Stuff',
-            # 'client_id': '2149780',\
-            # 'project_id': '153125'\
             'started_at': zulu_time(datetime.utcnow())
         }
     }
@@ -59,7 +56,7 @@ def pause_time_entry(user, timer):
 
 
 def update_time_entry(user, timer, client_id=None, internal_client=False,
-                      project_id=None, service_id=None, note=None):
+                      project=None, change_billable=False, service_id=None, note=None):
     active_time_entry = timer.active_time_entry
 
     if client_id:
@@ -67,12 +64,18 @@ def update_time_entry(user, timer, client_id=None, internal_client=False,
     elif internal_client:
         active_time_entry['client_id'] = None
         active_time_entry['internal'] = True
-    if project_id:
-        active_time_entry['project_id'] = project_id
+    if project:
+        active_time_entry['project_id'] = project.id
+        if not project.billable:
+            active_time_entry['billable'] = False
     if service_id:
         active_time_entry['service_id'] = service_id
+    if change_billable:
+        active_time_entry['billable'] = not active_time_entry['billable']
     if note:
         active_time_entry['note'] = note
+    if not timer.is_running:
+        active_time_entry['timer'] = {'id': timer.id}
 
     time_entry = {
         'time_entry': active_time_entry

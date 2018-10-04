@@ -11,7 +11,8 @@ from tests import get_fixture
 
 
 class DetailsTests(unittest.TestCase):
-    UPDATE_TEXT = 'Update:\n1. Client\n2. Project\n3. Service\n4. Note\n0. Quit\n'
+    UPDATE_TEXT = ('Update:\n1. Client\n2. Project\n3. Service\n4. Billable\n'
+                   '5. Note\n0. Quit\n')
     RECENT_CLIENTS_TEXT = (
         'Recent Clients:\n'
         '1. Internal (My Business)\n'
@@ -341,7 +342,7 @@ class DetailsTests(unittest.TestCase):
         )
 
         runner = CliRunner()
-        result = runner.invoke(cli, ['details'], input='4\nI added a note right here\n0\n')
+        result = runner.invoke(cli, ['details'], input='5\nI added a note right here\n0\n')
 
         self.assertEqual(result.exit_code, 0)
         self.assertEqual(

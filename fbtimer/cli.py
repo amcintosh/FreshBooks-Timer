@@ -70,9 +70,10 @@ def show(all):
         if timer.service_id:
             service = get_service(user, timer.service_id)
             text.append('Service: {}'.format(service))
+        text.append('\n({})'.format(timer.billable_msg()))
         click.secho(', '.join(text), fg=colour)
         if timer.note:
-            click.secho('Note: {}'.format(timer.note), fg=colour)
+            click.secho('\nNote: {}'.format(timer.note), fg=colour)
 
 
 @cli.command()
@@ -153,7 +154,7 @@ def save_details(ctx):
     '''Update timer details'''
     user = User()
     timer = get_timer(user)
-    if not timer or not timer.is_running:
+    if not timer:
         click.secho('There is no timer running', fg='magenta')
         return
 
@@ -167,7 +168,8 @@ def save_details(ctx):
         click.secho('1. Client', fg='blue')
         click.secho('2. Project', fg='blue')
         click.secho('3. Service', fg='blue')
-        click.secho('4. Note', fg='blue')
+        click.secho('4. Billable', fg='blue')
+        click.secho('5. Note', fg='blue')
         click.secho('0. Quit', fg='blue')
         choice = click.getchar()
 
@@ -178,6 +180,8 @@ def save_details(ctx):
         if choice == '3':
             choose_service(ctx, user, timer)
         if choice == '4':
+            set_billable(ctx, user, timer)
+        if choice == '5':
             set_note(ctx, user, timer)
 
 
@@ -224,7 +228,7 @@ def choose_project(ctx, user, timer):
         return
     try:
         selected = client_projects[int(choice) - 1]
-        update_time_entry(user, timer, project_id=selected.id)
+        update_time_entry(user, timer, project=selected)
         click.secho('Setting project to {}'.format(selected), fg='green')
     except requests.exceptions.HTTPError as e:
         click.secho('Error while trying to update timer', fg='magenta')
@@ -259,6 +263,20 @@ def choose_service(ctx, user, timer):
     except Exception as e:
         log.debug(e)
         choose_service(ctx, user, timer)
+
+
+def set_billable(ctx, user, timer):
+    click.secho('Currently {}'.format(timer.billable_msg()), fg='green')
+    change = click.prompt('Change? y/n')
+    if change == 'y':
+        project = get_project(user, timer.project_id)
+        if not project.billable:
+            click.secho(
+                'Sorry. This project cannot have billable time logged',
+                fg='green'
+            )
+            return
+        update_time_entry(user, timer, change_billable=True)
 
 
 def set_note(ctx, user, timer):

@@ -11,6 +11,10 @@ class Project(BaseModel):
         return self.raw_data.get('client_id')
 
     @property
+    def billable(self):
+        return self.raw_data.get('project_type') != 'fixed_price'
+
+    @property
     def services(self):
         return [Service(a) for a in self.raw_data.get('services')]
 
